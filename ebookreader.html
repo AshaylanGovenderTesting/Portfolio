@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ebook Reader</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .banner {
+      width: 100%;
+      background: #1e293b;
+      color: #facc15;
+      text-align: center;
+      padding: 10px 12px;
+      font-size: 0.92rem;
+      line-height: 1.4;
+    }
+
+    .demo-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      font-size: 0.42em;
+      font-weight: 700;
+      line-height: 1;
+      vertical-align: super;
+      white-space: nowrap;
+    }
+
+    .page {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 28px 20px 40px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 4vw, 3rem);
+    }
+
+    .hero p {
+      margin: 0 auto;
+      max-width: 760px;
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    .reader-area {
+      padding: 20px;
+    }
+
+    .device-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .device-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .device-buttons,
+    .tablet-orientation {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tablet-orientation {
+      display: none;
+    }
+
+    .tablet-orientation.show {
+      display: flex;
+    }
+
+    .device-button,
+    .orientation-button {
+      border: 1px solid #cbd5e1;
+      background: white;
+      color: #0f172a;
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      min-height: 42px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .device-button.active,
+    .orientation-button.active {
+      background: #0f172a;
+      color: white;
+      border-color: #0f172a;
+    }
+
+    .device-note {
+      color: #64748b;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .preview-stage {
+      min-height: 820px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #cbd5e1 0%, #e2e8f0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: auto;
+    }
+
+    .device-frame {
+      background: #0f172a;
+      border-radius: 34px;
+      padding: 14px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+      transition: width 0.3s ease, height 0.3s ease;
+      width: 390px;
+      height: 780px;
+      max-width: 100%;
+    }
+
+    .device-frame.tablet {
+      width: 700px;
+      height: 980px;
+      border-radius: 30px;
+    }
+
+    .device-frame.tablet.landscape {
+      width: 980px;
+      height: 700px;
+    }
+
+    .device-screen {
+      background: #f8fafc;
+      height: 100%;
+      border-radius: 22px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .app-topbar {
+      background: white;
+      padding: 14px 16px;
+      border-bottom: 1px solid #e2e8f0;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .menu-toggle {
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: 10px;
+      background: #e2e8f0;
+      color: #334155;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+
+    .menu-toggle.hidden {
+      visibility: hidden;
+    }
+
+    .app-brand {
+      font-weight: 700;
+      font-size: 0.98rem;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .app-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      min-width: 0;
+    }
+
+    .app-button,
+    .pill {
+      background: #e2e8f0;
+      color: #334155;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .app-button.primary {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .reader-home,
+    .reader-view {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .reader-home {
+      display: flex;
+      flex-direction: column;
+      padding: 18px;
+      background: linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%);
+      overflow: auto;
+    }
+
+    .home-header {
+      margin-bottom: 16px;
+    }
+
+    .home-header h2 {
+      margin: 0 0 6px;
+      font-size: 1.35rem;
+    }
+
+    .home-header p {
+      margin: 0;
+      color: #64748b;
+      line-height: 1.5;
+      font-size: 0.92rem;
+    }
+
+    .bookshelf {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .device-frame.mobile .bookshelf {
+      grid-template-columns: 1fr;
+    }
+
+    .shelf-book {
+      border: 1px solid #cbd5e1;
+      background: white;
+      border-radius: 18px;
+      padding: 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .shelf-book:hover,
+    .shelf-book.active {
+      transform: translateY(-2px);
+      border-color: #3b82f6;
+      box-shadow: 0 10px 24px rgba(59, 130, 246, 0.12);
+    }
+
+    .book-spine {
+      height: 170px;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      text-align: center;
+      padding: 12px;
+      letter-spacing: 0.04em;
+    }
+
+    .cover-one {
+      background: linear-gradient(135deg, #1d4ed8, #06b6d4);
+    }
+
+    .cover-two {
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+    }
+
+    .cover-three {
+      background: linear-gradient(135deg, #0f766e, #22c55e);
+    }
+
+    .shelf-book h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+    }
+
+    .shelf-book p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .reader-view {
+      display: none;
+      min-height: 0;
+      position: relative;
+    }
+
+    .reader-view.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .reader-body {
+      display: grid;
+      grid-template-columns: 200px minmax(0, 1fr);
+      flex: 1;
+      min-height: 0;
+      transition: grid-template-columns 0.25s ease;
+    }
+
+    .reader-body.sidebar-collapsed {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .reader-body.sidebar-collapsed .reader-sidebar {
+      display: none;
+    }
+
+    .reader-sidebar {
+      background: #eff6ff;
+      border-right: 1px solid #dbeafe;
+      padding: 16px;
+      overflow: auto;
+    }
+
+    .reader-sidebar h3 {
+      margin: 0 0 12px;
+      font-size: 0.95rem;
+    }
+
+    .chapter-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .chapter-item {
+      padding: 10px;
+      border-radius: 10px;
+      background: white;
+      color: #334155;
+      font-size: 0.88rem;
+      border: 1px solid #dbeafe;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .chapter-item.active {
+      background: #dbeafe;
+      border-color: #93c5fd;
+      font-weight: 700;
+    }
+
+    .reader-content {
+      padding: 20px;
+      overflow: auto;
+      background: #fffdf7;
+    }
+
+    .reader-content h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.2rem, 2vw, 1.8rem);
+    }
+
+    .reader-content .meta {
+      margin: 0 0 18px;
+      color: #64748b;
+      font-size: 0.92rem;
+    }
+
+    .reader-content p {
+      margin: 0 0 16px;
+      line-height: 1.7;
+      color: #334155;
+      font-size: clamp(0.95rem, 1.3vw, 1rem);
+    }
+
+    .reader-footer {
+      padding: 12px 16px;
+      background: white;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.88rem;
+      color: #64748b;
+    }
+
+    .progress {
+      flex: 1;
+      height: 8px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #2563eb, #06b6d4);
+    }
+
+    .mobile-menu {
+      display: none;
+      position: absolute;
+      top: 64px;
+      left: 12px;
+      right: 12px;
+      z-index: 20;
+      background: white;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      box-shadow: 0 20px 35px rgba(15, 23, 42, 0.16);
+      padding: 14px;
+    }
+
+    .mobile-menu.show {
+      display: block;
+    }
+
+    .mobile-menu h3 {
+      margin: 0 0 12px;
+      font-size: 0.95rem;
+    }
+
+    .menu-backdrop {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.18);
+      z-index: 10;
+    }
+
+    .menu-backdrop.show {
+      display: block;
+    }
+
+    @media (max-width: 1024px) {
+      .device-frame.tablet.landscape {
+        width: 900px;
+        height: 640px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .page {
+        padding: 20px 14px 28px;
+      }
+
+      .reader-area {
+        padding: 16px;
+      }
+
+      .device-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .device-controls,
+      .device-buttons,
+      .tablet-orientation {
+        width: 100%;
+      }
+
+      .device-button,
+      .orientation-button {
+        flex: 1 1 0;
+      }
+
+      .preview-stage {
+        min-height: 620px;
+        padding: 12px;
+      }
+
+      .device-frame {
+        width: min(390px, 100%);
+        height: 720px;
+      }
+
+      .device-frame.tablet {
+        width: min(100%, 700px);
+        height: 980px;
+      }
+
+      .device-frame.tablet.landscape {
+        width: min(100%, 860px);
+        height: 620px;
+      }
+
+      .app-topbar {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+      }
+
+      .app-actions {
+        gap: 6px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .banner {
+        font-size: 0.84rem;
+      }
+
+      .page {
+        padding: 16px 10px 24px;
+      }
+
+      .hero p {
+        font-size: 0.95rem;
+      }
+
+      .preview-stage {
+        min-height: 540px;
+        padding: 10px;
+      }
+
+      .device-frame {
+        height: 680px;
+        padding: 10px;
+        border-radius: 24px;
+      }
+
+      .device-frame.tablet {
+        width: min(100%, 520px);
+        height: 760px;
+      }
+
+      .device-frame.tablet.landscape {
+        width: min(100%, 560px);
+        height: 420px;
+      }
+
+      .device-screen {
+        border-radius: 16px;
+      }
+
+      .reader-content,
+      .reader-sidebar,
+      .reader-home {
+        padding: 14px;
+      }
+
+      .app-topbar,
+      .reader-footer {
+        padding: 12px;
+      }
+
+      .app-topbar {
+        gap: 8px;
+      }
+
+      .app-brand {
+        font-size: 0.9rem;
+      }
+
+      .app-actions {
+        gap: 4px;
+      }
+
+      .app-button,
+      .pill {
+        padding: 6px 8px;
+        font-size: 0.72rem;
+      }
+
+      .reader-footer {
+        flex-wrap: wrap;
+      }
+
+      .reader-footer .progress {
+        order: 3;
+        width: 100%;
+        flex-basis: 100%;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .page {
+        padding: 12px 8px 20px;
+      }
+
+      .reader-area {
+        padding: 12px;
+      }
+
+      .device-frame {
+        height: 620px;
+        padding: 8px;
+      }
+
+      .menu-toggle {
+        width: 32px;
+        height: 32px;
+      }
+
+      .app-brand {
+        font-size: 0.82rem;
+      }
+
+      .app-button,
+      .pill {
+        padding: 5px 7px;
+        font-size: 0.68rem;
+      }
+
+      .book-spine {
+        height: 140px;
+      }
+    }
+
+    @media (min-width: 1400px) {
+      .page {
+        max-width: 1500px;
+        padding: 36px 28px 52px;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.8rem, 3vw, 4rem);
+      }
+
+      .hero p,
+      .device-note {
+        font-size: 1rem;
+      }
+
+      .reader-area {
+        padding: 24px;
+      }
+
+      .preview-stage {
+        min-height: 900px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    This is a showcase version. Reading samples are included for proof of concept only. A full version with expanded library support will be available as a standalone app in future releases.
+  </div>
+
+  <main class="page">
+    <section class="hero">
+      <h1>Ebook Reader Demo<span class="demo-badge">DEMO MODE</span></h1>
+      <p>A web-based proof of concept for a future mobile reading app. Open the app below, browse the bookshelf, then switch between mobile and tablet view to see how the interface would scale across smart devices.</p>
+    </section>
+
+    <section class="layout">
+      <section class="panel reader-area">
+        <div class="device-bar">
+          <div class="device-controls">
+            <div class="device-buttons">
+              <button class="device-button active" onclick="setDevice('mobile', this)">Mobile View</button>
+              <button class="device-button" onclick="setDevice('tablet', this)">Tablet View</button>
+            </div>
+            <div class="tablet-orientation" id="tabletOrientationControls">
+              <button class="orientation-button active" onclick="setTabletOrientation('portrait', this)">Portrait</button>
+              <button class="orientation-button" onclick="setTabletOrientation('landscape', this)">Landscape</button>
+            </div>
+          </div>
+          <p class="device-note">The preview box below resizes to represent a standard smartphone or tablet reading experience.</p>
+        </div>
+
+        <div class="preview-stage">
+          <div class="device-frame mobile" id="deviceFrame">
+            <div class="device-screen">
+              <div class="menu-backdrop" id="menuBackdrop" onclick="closeChapterPanel()"></div>
+              <div class="mobile-menu" id="mobileMenu">
+                <h3>Chapters</h3>
+                <div class="chapter-list" id="mobileChapterList"></div>
+              </div>
+
+              <div class="app-topbar">
+                <button class="menu-toggle hidden" id="menuToggle" onclick="handleMenuToggle()">☰</button>
+                <div class="app-brand" id="appBrand">Library</div>
+                <div class="app-actions">
+                  <button class="app-button primary" onclick="showLibraryView()">Library</button>
+                  <span class="pill">Bookmark</span>
+                  <span class="pill">Aa</span>
+                </div>
+              </div>
+
+              <section class="reader-home" id="readerHome">
+                <div class="home-header">
+                  <h2>Bookcase</h2>
+                  <p>Select a preview title to open it in the reader. This home view is designed to resemble the first screen of a mobile ebook app.</p>
+                </div>
+
+                <div class="bookshelf">
+                  <button class="shelf-book active" onclick="openBook(0)">
+                    <div class="book-spine cover-one">MIDNIGHT CITY</div>
+                    <h3>Midnight City</h3>
+                    <p>Urban fantasy sample with atmospheric long-form reading layout.</p>
+                  </button>
+
+                  <button class="shelf-book" onclick="openBook(1)">
+                    <div class="book-spine cover-two">BUILD SMARTER</div>
+                    <h3>Build Smarter</h3>
+                    <p>Non-fiction style sample showing chapter navigation and cleaner formatting.</p>
+                  </button>
+
+                  <button class="shelf-book" onclick="openBook(2)">
+                    <div class="book-spine cover-three">GREEN HORIZONS</div>
+                    <h3>Green Horizons</h3>
+                    <p>Magazine-style reading sample with a softer visual presentation.</p>
+                  </button>
+                </div>
+              </section>
+
+              <section class="reader-view" id="readerView">
+                <div class="reader-body" id="readerBody">
+                  <aside class="reader-sidebar">
+                    <h3>Chapters</h3>
+                    <div class="chapter-list" id="chapterList"></div>
+                  </aside>
+
+                  <article class="reader-content" id="readerContent">
+                    <h2 id="bookTitle"></h2>
+                    <p class="meta" id="bookMeta"></p>
+                    <div id="bookContent"></div>
+                  </article>
+                </div>
+
+                <div class="reader-footer">
+                  <span id="pageLabel">Page 1 of 1</span>
+                  <div class="progress">
+                    <div class="progress-fill" id="progressFill"></div>
+                  </div>
+                  <span id="progressLabel">0%</span>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const books = [
+      {
+        title: 'Midnight City',
+        metaBase: 'Preview Sample',
+        chapters: [
+          {
+            title: 'Arrival',
+            page: 'Page 4 of 28',
+            progress: '14%',
+            progressWidth: '14%',
+            content: [
+              'The city never truly slept. Even in the quietest hours, the windows held a low amber glow, as though the streets themselves remembered the day and refused to let it end.',
+              'Nathan stood beneath the train arch and watched the thin ribbon of rain gloss the pavement in silver. Somewhere beyond the market square, music drifted between brick walls and open shutters, softened by distance and the weight of the weather.'
+            ]
+          },
+          {
+            title: 'The Lantern Alley',
+            page: 'Page 8 of 28',
+            progress: '28%',
+            progressWidth: '28%',
+            content: [
+              'He turned into a narrow alley veined with hanging lights. Lanterns floated over the cobbles, each one swaying as though suspended from an invisible tide.',
+              'For a moment, the city around him seemed to hold its breath. The sound of footsteps faded. Even the rain thinned to a hush against the stone.'
+            ]
+          },
+          {
+            title: 'A Quiet Warning',
+            page: 'Page 12 of 28',
+            progress: '42%',
+            progressWidth: '42%',
+            content: [
+              'A woman seated beneath a striped awning watched him close the book and offered a look that was almost pity. “Some doors,” she said softly, “stay kinder when left unopened.”',
+              'The warning stayed with him even after he crossed the market square. It moved behind his thoughts like a second pulse.'
+            ]
+          },
+          {
+            title: 'The Watcher',
+            page: 'Page 16 of 28',
+            progress: '57%',
+            progressWidth: '57%',
+            content: [
+              'In the final lines of the chapter, the city lights flickered once, and a single lantern moved against the wind.',
+              'He looked up in time to see a shadow pause at the edge of the square, tall and indistinct, as if it had been waiting for him to notice.'
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Build Smarter',
+        metaBase: 'Product Thinking',
+        chapters: [
+          {
+            title: 'Problem First',
+            page: 'Page 12 of 90',
+            progress: '13%',
+            progressWidth: '13%',
+            content: [
+              'Strong products begin with clarity. Before choosing a framework, a database, or a deployment path, it helps to define what the user needs to accomplish in the shortest, clearest path possible.',
+              'A great interface solves anxiety first. It tells the user where to start, what matters most, and how to recover if they make a mistake.'
+            ]
+          },
+          {
+            title: 'Planning Scope',
+            page: 'Page 22 of 90',
+            progress: '24%',
+            progressWidth: '24%',
+            content: [
+              'Prototype scope should be intentional. The goal is not to build everything, but to prove the workflow that matters most.',
+              'When a proof of concept can demonstrate value quickly, it becomes much easier to decide what deserves deeper engineering effort next.'
+            ]
+          },
+          {
+            title: 'User Flow',
+            page: 'Page 34 of 90',
+            progress: '38%',
+            progressWidth: '38%',
+            content: [
+              'A useful interface does not simply present features. It creates confidence. It tells the user what will happen after each action and keeps the path forward obvious.',
+              'That is why clear navigation patterns matter more than feature count in early product work.'
+            ]
+          },
+          {
+            title: 'Iteration',
+            page: 'Page 48 of 90',
+            progress: '53%',
+            progressWidth: '53%',
+            content: [
+              'Iteration is strongest when it is grounded in observation. Watch how people hesitate. Watch where they look first. Watch what they ignore.',
+              'Every friction point discovered early becomes cheaper to solve and easier to explain.'
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Green Horizons',
+        metaBase: 'Spring Edition',
+        chapters: [
+          {
+            title: 'Editorial',
+            page: 'Page 3 of 20',
+            progress: '15%',
+            progressWidth: '15%',
+            content: [
+              'The most interesting design shifts are often the quiet ones. A balcony becomes a food garden. A shaded alley becomes a cooling corridor.',
+              'The future of design is not only about structure, but about how a place makes people breathe, move, and stay.'
+            ]
+          },
+          {
+            title: 'New Materials',
+            page: 'Page 8 of 20',
+            progress: '40%',
+            progressWidth: '40%',
+            content: [
+              'Stone and steel remain, but they are increasingly paired with texture, shade, and plant life that invite slower movement and longer attention.',
+              'Materials are being chosen not just for durability, but for the way they soften the emotional feel of a space.'
+            ]
+          },
+          {
+            title: 'Urban Gardens',
+            page: 'Page 12 of 20',
+            progress: '60%',
+            progressWidth: '60%',
+            content: [
+              'Readers have responded strongly to spaces that feel restorative rather than merely efficient. Rooftops, courtyards, and narrow passages are being reimagined as places of pause.',
+              'That shift suggests a broader desire for environments that feel human in scale and deliberate in pace.'
+            ]
+          },
+          {
+            title: 'Future Spaces',
+            page: 'Page 17 of 20',
+            progress: '85%',
+            progressWidth: '85%',
+            content: [
+              'That shift is visible not only in architecture, but in the digital products that mirror the way people want to feel when they move through a space.',
+              'Calmer interfaces, softer transitions, and clearer focus may define the next generation of reading and design experiences.'
+            ]
+          }
+        ]
+      }
+    ];
+
+    let currentBookIndex = 0;
+    let currentChapterIndex = 0;
+    let currentDevice = 'mobile';
+    let currentTabletOrientation = 'portrait';
+    let tabletSidebarVisible = true;
+
+    function updateActiveBookButton(index) {
+      document.querySelectorAll('.shelf-book').forEach((book, i) => {
+        book.classList.toggle('active', i === index);
+      });
+    }
+
+    function renderChapterLists() {
+      const book = books[currentBookIndex];
+      const chapterMarkup = book.chapters.map((chapter, i) => `
+        <button class="chapter-item ${i === currentChapterIndex ? 'active' : ''}" onclick="goToChapter(${i})">
+          ${chapter.title}
+        </button>
+      `).join('');
+
+      document.getElementById('chapterList').innerHTML = chapterMarkup;
+      document.getElementById('mobileChapterList').innerHTML = chapterMarkup;
+    }
+
+    function renderCurrentChapter() {
+      const book = books[currentBookIndex];
+      const chapter = book.chapters[currentChapterIndex];
+
+      document.getElementById('appBrand').textContent = book.title;
+      document.getElementById('bookTitle').textContent = book.title;
+      document.getElementById('bookMeta').textContent = `${chapter.title} • ${book.metaBase}`;
+      document.getElementById('pageLabel').textContent = chapter.page;
+      document.getElementById('progressLabel').textContent = chapter.progress;
+      document.getElementById('progressFill').style.width = chapter.progressWidth;
+      document.getElementById('bookContent').innerHTML = chapter.content.map(paragraph => `<p>${paragraph}</p>`).join('');
+      document.getElementById('readerContent').scrollTop = 0;
+      renderChapterLists();
+    }
+
+    function openBook(index) {
+      currentBookIndex = index;
+      currentChapterIndex = 0;
+      tabletSidebarVisible = true;
+      updateActiveBookButton(index);
+      document.getElementById('readerHome').style.display = 'none';
+      document.getElementById('readerView').classList.add('active');
+      renderCurrentChapter();
+      applySidebarState();
+      updateMenuToggleState();
+      closeChapterPanel();
+    }
+
+    function showLibraryView() {
+      document.getElementById('appBrand').textContent = 'Library';
+      document.getElementById('readerHome').style.display = 'flex';
+      document.getElementById('readerView').classList.remove('active');
+      tabletSidebarVisible = true;
+      applySidebarState();
+      updateMenuToggleState();
+      closeChapterPanel();
+    }
+
+    function goToChapter(index) {
+      currentChapterIndex = index;
+      renderCurrentChapter();
+      closeChapterPanel();
+    }
+
+    function setDevice(device, button) {
+      currentDevice = device;
+      const frame = document.getElementById('deviceFrame');
+      const orientationControls = document.getElementById('tabletOrientationControls');
+
+      if (device === 'tablet') {
+        frame.className = `device-frame tablet ${currentTabletOrientation}`;
+        orientationControls.classList.add('show');
+      } else {
+        frame.className = 'device-frame mobile';
+        orientationControls.classList.remove('show');
+      }
+
+      document.querySelectorAll('.device-button').forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+
+      const readerBody = document.getElementById('readerBody');
+      if (device === 'mobile') {
+        readerBody.classList.add('sidebar-collapsed');
+      }
+
+      closeChapterPanel();
+      applySidebarState();
+      updateMenuToggleState();
+    }
+
+    function setTabletOrientation(orientation, button) {
+      currentTabletOrientation = orientation;
+      if (currentDevice !== 'tablet') return;
+
+      const frame = document.getElementById('deviceFrame');
+      frame.className = `device-frame tablet ${orientation}`;
+      document.querySelectorAll('.orientation-button').forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      closeChapterPanel();
+    }
+
+    function handleMenuToggle() {
+      const readerViewActive = document.getElementById('readerView').classList.contains('active');
+      if (!readerViewActive) return;
+
+      if (currentDevice === 'mobile') {
+        toggleMobileMenu();
+      } else if (currentDevice === 'tablet') {
+        tabletSidebarVisible = !tabletSidebarVisible;
+        applySidebarState();
+      }
+    }
+
+    function toggleMobileMenu() {
+      if (currentDevice !== 'mobile') return;
+      document.getElementById('mobileMenu').classList.toggle('show');
+      document.getElementById('menuBackdrop').classList.toggle('show');
+    }
+
+    function closeChapterPanel() {
+      document.getElementById('mobileMenu').classList.remove('show');
+      document.getElementById('menuBackdrop').classList.remove('show');
+    }
+
+    function applySidebarState() {
+      const readerBody = document.getElementById('readerBody');
+
+      if (currentDevice === 'mobile') {
+        readerBody.classList.add('sidebar-collapsed');
+        return;
+      }
+
+      if (currentDevice === 'tablet' && !tabletSidebarVisible) {
+        readerBody.classList.add('sidebar-collapsed');
+      } else {
+        readerBody.classList.remove('sidebar-collapsed');
+      }
+    }
+
+    function updateMenuToggleState() {
+      const toggle = document.getElementById('menuToggle');
+      const readerViewActive = document.getElementById('readerView').classList.contains('active');
+      if (readerViewActive && (currentDevice === 'mobile' || currentDevice === 'tablet')) {
+        toggle.classList.remove('hidden');
+      } else {
+        toggle.classList.add('hidden');
+      }
+    }
+
+    showLibraryView();
+    updateActiveBookButton(0);
+    setDevice('mobile', document.querySelector('.device-button.active'));
+  </script>
+</body>
+</html>

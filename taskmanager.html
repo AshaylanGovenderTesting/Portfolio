@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+
+    .banner {
+      width: 100%;
+      background: #1e293b;
+      color: #facc15;
+      text-align: center;
+      padding: 10px 12px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .wrapper {
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1.15;
+    }
+
+    .demo-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      font-size: 0.42em;
+      font-weight: 700;
+      line-height: 1;
+      vertical-align: super;
+      white-space: nowrap;
+    }
+
+    .container {
+      max-width: 900px;
+      width: min(900px, calc(100% - 24px));
+      margin: 0 auto;
+    }
+
+    .input-group {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr) auto auto;
+      gap: 10px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      min-height: 44px;
+    }
+
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #22c55e;
+      color: white;
+      cursor: pointer;
+      min-height: 44px;
+      font-weight: 600;
+    }
+
+    .secondary-btn {
+      background: #334155;
+    }
+
+    .secondary-btn.active {
+      background: #3b82f6;
+    }
+
+    .deadline-row {
+      display: none;
+      margin-bottom: 16px;
+    }
+
+    .deadline-row.show {
+      display: block;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+      justify-content: center;
+    }
+
+    .filters button {
+      background: #334155;
+    }
+
+    .filters button.active {
+      background: #22c55e;
+    }
+
+    .helper-text {
+      text-align: center;
+      color: #94a3b8;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .sort-note {
+      background: #1e293b;
+      border-left: 4px solid #22c55e;
+      color: #cbd5e1;
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      background: #1e293b;
+      margin-top: 10px;
+      padding: 14px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .task-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-title {
+      font-weight: 700;
+      margin-bottom: 8px;
+      word-break: break-word;
+    }
+
+    .completed {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .priority-high {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+    }
+
+    .priority-medium {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fcd34d;
+    }
+
+    .priority-low {
+      background: rgba(34, 197, 94, 0.2);
+      color: #86efac;
+    }
+
+    .deadline-badge {
+      background: rgba(59, 130, 246, 0.2);
+      color: #93c5fd;
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      flex: 0 0 auto;
+    }
+
+    .task-actions button {
+      min-width: 92px;
+    }
+
+    .delete-btn {
+      background: #ef4444;
+    }
+
+    .edit-btn {
+      background: #3b82f6;
+    }
+
+    .toggle-btn {
+      background: #22c55e;
+    }
+
+    .stats {
+      text-align: center;
+      margin-top: 15px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .danger-btn {
+      margin-top: 15px;
+      width: 100%;
+      background: #ef4444;
+    }
+
+    @media (max-width: 1024px) {
+      .container {
+        width: min(900px, calc(100% - 20px));
+      }
+
+      .input-group {
+        grid-template-columns: minmax(0, 1fr) minmax(170px, 220px) auto;
+      }
+
+      .add-btn {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 0;
+      }
+
+      .wrapper {
+        padding: 16px;
+      }
+
+      .container {
+        width: min(900px, calc(100% - 8px));
+      }
+
+      .input-group {
+        grid-template-columns: 1fr;
+      }
+
+      li {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .task-actions {
+        justify-content: stretch;
+        width: 100%;
+      }
+
+      .task-actions button {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .demo-badge {
+        margin-left: 8px;
+        padding: 3px 7px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .wrapper {
+        padding: 12px;
+      }
+
+      .container {
+        width: 100%;
+      }
+
+      h1 {
+        line-height: 1.2;
+      }
+
+      .input-group,
+      .filters {
+        gap: 8px;
+      }
+
+      li {
+        padding: 12px;
+      }
+
+      .filters {
+        flex-direction: column;
+      }
+
+      .filters button,
+      .input-group button,
+      .task-actions button {
+        width: 100%;
+      }
+
+      .demo-badge {
+        display: inline-block;
+        margin-left: 6px;
+        font-size: 0.4em;
+      }
+    }
+
+    @media (min-width: 1400px) {
+      .container {
+        max-width: 1050px;
+        width: min(1050px, calc(100% - 48px));
+      }
+
+      h1 {
+        font-size: clamp(2.8rem, 4vw, 4rem);
+      }
+
+      .helper-text,
+      .sort-note,
+      .stats {
+        font-size: 1.02rem;
+      }
+
+      li {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    This is a showcase version. Data will not persist and may be cleared on refresh or close. A full version will be available on all app stores soon.
+  </div>
+
+  <div class="wrapper">
+    <div class="container">
+      <h1>Task Manager<span class="demo-badge">DEMO MODE</span></h1>
+
+      <div class="input-group">
+        <input type="text" id="taskInput" placeholder="Enter a task...">
+        <select id="priorityInput">
+          <option value="high">High Priority</option>
+          <option value="medium" selected>Medium Priority</option>
+          <option value="low">Low Priority</option>
+        </select>
+        <button type="button" class="secondary-btn" id="deadlineToggleBtn" onclick="toggleDeadlineField()">Add Time Frame</button>
+        <button type="button" class="add-btn" onclick="addTask()">Add</button>
+      </div>
+
+      <div class="deadline-row" id="deadlineRow">
+        <input type="datetime-local" id="deadlineInput" aria-label="Optional deadline">
+      </div>
+
+      <p class="helper-text">Add a priority level first. If needed, use the time frame button to reveal an optional deadline. Tasks are automatically sorted so the most urgent and important items appear first.</p>
+
+      <div class="filters">
+        <button type="button" onclick="setFilter('all', this)" class="active">All</button>
+        <button type="button" onclick="setFilter('active', this)">Active</button>
+        <button type="button" onclick="setFilter('completed', this)">Completed</button>
+      </div>
+
+      <div class="sort-note" id="sortNote">Sorting order: incomplete tasks first, then by priority (high to low), then by nearest deadline.</div>
+
+      <ul id="taskList"></ul>
+
+      <div class="stats" id="stats"></div>
+
+      <button type="button" onclick="clearAll()" class="danger-btn">Clear All</button>
+    </div>
+  </div>
+
+  <script>
+    let tasks = [];
+    let currentFilter = 'all';
+
+    const deadlineRow = document.getElementById('deadlineRow');
+    const deadlineInput = document.getElementById('deadlineInput');
+    const deadlineToggleBtn = document.getElementById('deadlineToggleBtn');
+
+    const priorityRank = {
+      high: 1,
+      medium: 2,
+      low: 3
+    };
+
+    document.getElementById('taskInput').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') addTask();
+    });
+
+    function toggleDeadlineField() {
+      const isVisible = deadlineRow.classList.toggle('show');
+      deadlineToggleBtn.classList.toggle('active', isVisible);
+      deadlineToggleBtn.textContent = isVisible ? 'Remove Time Frame' : 'Add Time Frame';
+
+      if (!isVisible) {
+        deadlineInput.value = '';
+      }
+    }
+
+    function formatDeadline(deadline) {
+      if (!deadline) return 'No deadline';
+      const date = new Date(deadline);
+      if (Number.isNaN(date.getTime())) return 'No deadline';
+      return date.toLocaleString();
+    }
+
+    function sortTasks(taskList) {
+      return [...taskList].sort((a, b) => {
+        if (a.completed !== b.completed) {
+          return a.completed - b.completed;
+        }
+
+        const aPriority = priorityRank[a.priority] || priorityRank.medium;
+        const bPriority = priorityRank[b.priority] || priorityRank.medium;
+        const priorityDifference = aPriority - bPriority;
+
+        if (priorityDifference !== 0) {
+          return priorityDifference;
+        }
+
+        if (a.deadline && b.deadline) {
+          return new Date(a.deadline) - new Date(b.deadline);
+        }
+
+        if (a.deadline && !b.deadline) return -1;
+        if (!a.deadline && b.deadline) return 1;
+
+        return 0;
+      });
+    }
+
+    function renderTasks() {
+      const list = document.getElementById('taskList');
+      const stats = document.getElementById('stats');
+      list.innerHTML = '';
+
+      const sortedTasks = sortTasks(tasks);
+
+      const filtered = sortedTasks.filter(task => {
+        if (currentFilter === 'active') return !task.completed;
+        if (currentFilter === 'completed') return task.completed;
+        return true;
+      });
+
+      filtered.forEach((task, filteredIndex) => {
+        const originalIndex = tasks.indexOf(task);
+        const li = document.createElement('li');
+
+        const info = document.createElement('div');
+        info.className = 'task-info';
+
+        const title = document.createElement('div');
+        title.className = 'task-title';
+        title.textContent = task.text;
+        if (task.completed) title.classList.add('completed');
+
+        const meta = document.createElement('div');
+        meta.className = 'task-meta';
+
+        const safePriority = ['high', 'medium', 'low'].includes(task.priority) ? task.priority : 'medium';
+        const priorityBadge = document.createElement('span');
+        priorityBadge.className = `badge priority-${safePriority}`;
+        priorityBadge.textContent = `${safePriority.charAt(0).toUpperCase() + safePriority.slice(1)} Priority`;
+        meta.appendChild(priorityBadge);
+
+        if (task.deadline) {
+          const deadlineBadge = document.createElement('span');
+          deadlineBadge.className = 'badge deadline-badge';
+          deadlineBadge.textContent = `Due: ${formatDeadline(task.deadline)}`;
+          meta.appendChild(deadlineBadge);
+        }
+
+        info.appendChild(title);
+        info.appendChild(meta);
+
+        const actions = document.createElement('div');
+        actions.className = 'task-actions';
+
+        const toggleBtn = document.createElement('button');
+        toggleBtn.textContent = task.completed ? 'Undo' : 'Complete';
+        toggleBtn.className = 'toggle-btn';
+        toggleBtn.onclick = () => toggleTask(originalIndex);
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.className = 'edit-btn';
+        editBtn.onclick = () => editTask(originalIndex);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.onclick = () => deleteTask(originalIndex);
+
+        actions.appendChild(toggleBtn);
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        li.appendChild(info);
+        li.appendChild(actions);
+        list.appendChild(li);
+      });
+
+      const completedCount = tasks.filter(task => task.completed).length;
+      stats.textContent = `${completedCount} of ${tasks.length} tasks completed`;
+    }
+
+    function addTask() {
+      const input = document.getElementById('taskInput');
+      const priorityInput = document.getElementById('priorityInput');
+      const text = input.value.trim();
+
+      if (!text) return;
+
+      const deadlineValue = deadlineRow.classList.contains('show') ? deadlineInput.value : '';
+
+      tasks.push({
+        text,
+        priority: priorityInput.value,
+        deadline: deadlineValue || '',
+        completed: false
+      });
+
+      input.value = '';
+      priorityInput.value = 'medium';
+      deadlineInput.value = '';
+      deadlineRow.classList.remove('show');
+      deadlineToggleBtn.classList.remove('active');
+      deadlineToggleBtn.textContent = 'Add Time Frame';
+      renderTasks();
+    }
+
+    function toggleTask(index) {
+      tasks[index].completed = !tasks[index].completed;
+      renderTasks();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      renderTasks();
+    }
+
+    function editTask(index) {
+      const currentTask = tasks[index];
+      const newText = prompt('Edit task name:', currentTask.text);
+      if (newText === null || newText.trim() === '') return;
+
+      const newPriority = prompt('Edit priority: high, medium, or low', currentTask.priority);
+      if (newPriority === null) return;
+
+      const normalizedPriority = newPriority.trim().toLowerCase();
+      if (!priorityRank[normalizedPriority]) {
+        alert('Priority must be high, medium, or low.');
+        return;
+      }
+
+      const currentDeadline = currentTask.deadline || '';
+      const newDeadline = prompt('Edit deadline in format YYYY-MM-DDTHH:MM or leave blank', currentDeadline);
+      if (newDeadline === null && currentDeadline !== '') return;
+
+      tasks[index].text = newText.trim();
+      tasks[index].priority = normalizedPriority;
+      tasks[index].deadline = newDeadline ? newDeadline.trim() : '';
+      renderTasks();
+    }
+
+    function clearAll() {
+      if (confirm('Clear all tasks?')) {
+        tasks = [];
+        renderTasks();
+      }
+    }
+
+    function setFilter(filter, buttonElement) {
+      currentFilter = filter;
+      document.querySelectorAll('.filters button').forEach(btn => btn.classList.remove('active'));
+      buttonElement.classList.add('active');
+      renderTasks();
+    }
+
+    renderTasks();
+  </script>
+</body>
+</html>

@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ashaylan Govender | Portfolio</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    canvas#matrix {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      background: #020617;
+      opacity: 0.35;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: transparent;
+      color: #e2e8f0;
+      line-height: 1.6;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.75);
+      z-index: 0;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(2, 6, 23, 0.82);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .nav-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: nowrap;
+    }
+
+    .logo {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #f8fafc;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    .nav-links a:hover {
+      color: #67e8f9;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      padding: 90px 20px 70px;
+      text-align: center;
+      background: linear-gradient(to bottom, rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.38));
+      backdrop-filter: blur(2px);
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin-bottom: 10px;
+      line-height: 1.15;
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 4vw, 2rem);
+      margin-bottom: 10px;
+      color: #f8fafc;
+      line-height: 1.2;
+    }
+
+    p {
+      color: #cbd5e1;
+      margin-top: 0;
+    }
+
+    .hero-text {
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: clamp(1rem, 2.5vw, 1.1rem);
+      padding-inline: 8px;
+    }
+
+    .btn-group {
+      margin-top: 25px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 12px 22px;
+      border: none;
+      cursor: pointer;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      text-align: center;
+      min-height: 44px;
+      transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      opacity: 0.95;
+    }
+
+    .btn-primary {
+      background: #0f172a;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+    }
+
+    .section {
+      backdrop-filter: blur(2px);
+      position: relative;
+      z-index: 1;
+      padding: 70px 20px;
+      width: min(1100px, calc(100% - 32px));
+      margin: auto;
+    }
+
+    .section-intro {
+      max-width: 700px;
+      margin-bottom: 30px;
+    }
+
+    .skills-grid,
+    .projects {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.78);
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.22);
+      border: 1px solid rgba(56, 189, 248, 0.12);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      flex: 0 1 340px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #f8fafc;
+    }
+
+    .skill-tag {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 6px 10px;
+      background: #1e293b;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      color: #cbd5e1;
+    }
+
+    .project-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .project-links a,
+    .project-links button {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      background: white;
+      color: #0f172a;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 42px;
+      flex: 1 1 140px;
+      text-align: center;
+    }
+
+    .project-links a:hover,
+    .project-links button:hover {
+      background: #f1f5f9;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .contact-box {
+      background: rgba(15, 23, 42, 0.78);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.22);
+      border: 1px solid rgba(56, 189, 248, 0.12);
+      max-width: 700px;
+    }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 30px 20px 40px;
+      color: #94a3b8;
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .fade-in.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1024px) {
+      .skills-grid,
+      .projects {
+        justify-content: center;
+      }
+
+      .card {
+        max-width: 420px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-container {
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+        flex-wrap: wrap;
+      }
+
+      .nav-links {
+        justify-content: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+
+      .logo {
+        text-align: center;
+      }
+
+      header {
+        padding: 72px 16px 56px;
+      }
+
+      .section {
+        padding: 56px 16px;
+        width: min(1100px, calc(100% - 20px));
+      }
+
+      .card,
+      .contact-box {
+        padding: 20px;
+        width: 100%;
+        max-width: 420px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .navbar {
+        position: static;
+      }
+
+      .nav-container {
+        padding: 14px 12px;
+        gap: 10px;
+      }
+
+      .logo {
+        font-size: 1rem;
+        width: 100%;
+        text-align: center;
+      }
+
+      .nav-links {
+        gap: 10px 14px;
+        font-size: 0.95rem;
+        justify-content: center;
+      }
+
+      header {
+        padding: 52px 12px 44px;
+      }
+
+      .hero-text {
+        padding-inline: 0;
+      }
+
+      .section {
+        padding: 44px 12px;
+        width: calc(100% - 12px);
+      }
+
+      .section-intro {
+        margin-bottom: 22px;
+      }
+
+      .skills-grid,
+      .projects {
+        gap: 16px;
+      }
+
+      .card,
+      .contact-box {
+        padding: 16px;
+        border-radius: 14px;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .project-links a,
+      .project-links button {
+        flex: 1 1 100%;
+        width: 100%;
+      }
+
+      footer {
+        padding-inline: 12px;
+      }
+    }
+
+    @media (min-width: 1400px) {
+      .nav-container {
+        max-width: 1300px;
+      }
+
+      .section {
+        width: min(1300px, calc(100% - 48px));
+        padding: 90px 24px;
+      }
+
+      h1 {
+        font-size: clamp(3rem, 4vw, 4rem);
+      }
+
+      h2 {
+        font-size: clamp(2rem, 3vw, 2.5rem);
+      }
+
+      .hero-text {
+        font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+        max-width: 800px;
+      }
+
+      .card {
+        padding: 28px;
+      }
+    }
+
+    @media (min-width: 1800px) {
+      .nav-container {
+        max-width: 1500px;
+      }
+
+      .section {
+        width: min(1500px, calc(100% - 80px));
+        padding: 110px 40px;
+      }
+
+      h1 {
+        font-size: clamp(3.5rem, 3.5vw, 5rem);
+      }
+
+      h2 {
+        font-size: clamp(2.4rem, 2.5vw, 3rem);
+      }
+
+      .hero-text {
+        font-size: clamp(1.2rem, 1.5vw, 1.4rem);
+        max-width: 900px;
+      }
+
+      .btn {
+        padding: 14px 28px;
+        font-size: 1.05rem;
+      }
+
+      .card {
+        padding: 32px;
+        border-radius: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">Ashaylan Govender</div>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="fade-in">
+    <h1>Hi, I'm Ashaylan Govender</h1>
+    <p class="hero-text">Self-taught front-end developer building responsive websites and practical business tools with HTML, CSS, and JavaScript. I focus on clean interfaces, useful functionality, and projects that solve real-world problems.</p>
+    <div class="btn-group">
+      <a class="btn btn-primary" href="#projects">View Projects</a>
+      <a class="btn btn-secondary" href="#contact">Hire Me</a>
+    </div>
+  </header>
+
+  <section id="about" class="section fade-in">
+    <div class="section-intro">
+      <h2>About Me</h2>
+      <p>I am a self-taught developer from South Africa with a strong interest in front-end development and practical software solutions. I enjoy building projects that improve workflows, organise information clearly, and create a smooth user experience. My current focus is strengthening my HTML, CSS, and JavaScript foundations while building a portfolio that reflects real problem-solving ability.</p>
+    </div>
+  </section>
+
+  <section id="skills" class="section fade-in">
+    <div class="section-intro">
+      <h2>Skills</h2>
+      <p>These are the core technologies I currently use to build responsive, interactive, and user-focused web projects.</p>
+    </div>
+
+    <div class="skills-grid">
+      <div class="card">
+        <h3>HTML</h3>
+        <p>Building clean page structure with semantic tags and accessible content layout.</p>
+        <span class="skill-tag">Structure</span>
+      </div>
+
+      <div class="card">
+        <h3>CSS</h3>
+        <p>Creating responsive layouts, styling components, and improving design with spacing, flexbox, media queries, and visual polish.</p>
+        <span class="skill-tag">Styling</span>
+      </div>
+
+      <div class="card">
+        <h3>JavaScript</h3>
+        <p>Adding interactivity, dynamic content, filtering, sorting, and front-end logic for practical applications.</p>
+        <span class="skill-tag">Interactivity</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects" class="section fade-in">
+    <div class="section-intro">
+      <h2>Projects</h2>
+      <p>These projects highlight my technical growth, attention to user experience, and ability to build solutions around real business needs.</p>
+    </div>
+
+    <div class="projects">
+      <div class="card">
+        <h3>Call Centre Dashboard</h3>
+        <p>A business-focused dashboard built with HTML, CSS, and JavaScript for tracking agent attendance, team performance, sales activity, and internal reporting in one responsive management view.</p>
+        <div class="project-links">
+          <button onclick="toggleDetails(this)">More Info</button>
+          <a href="#">GitHub</a>
+          <a href="callcentredashboard.html" target="_blank" rel="noopener noreferrer">Live Demo</a>
+        </div>
+        <p class="hidden">This project includes live stat cards, agent management, team-based filtering, attendance and sales charts, a weekly trend snapshot, CSV export, and a real-time top agents leaderboard. It uses a seeded demo dataset of 25 agents to simulate realistic call centre usage and highlights front-end logic, dashboard design, responsive layout work, and product-style thinking for internal business systems.</p>
+      </div>
+
+      <div class="card">
+        <h3>Task Manager App</h3>
+        <p>A showcase task manager built with HTML, CSS, and JavaScript, featuring priority-based sorting and an optional time frame input for organising work more effectively.</p>
+        <div class="project-links">
+          <button onclick="toggleDetails(this)">More Info</button>
+          <a href="#">GitHub</a>
+          <a href="taskmanager.html" target="_blank" rel="noopener noreferrer">Live Demo</a>
+        </div>
+        <p class="hidden">This project includes task creation, priority levels, optional time frames, active and completed filters, automatic sorting by urgency, and a demo-mode banner for showcase use. It highlights front-end logic, responsive layout work, and product-style presentation for a future standalone app release.</p>
+      </div>
+
+      <div class="card">
+        <h3>Ebook Reader App</h3>
+        <p>A responsive ebook reader demo built with HTML, CSS, and JavaScript, featuring a dynamic bookcase interface and mobile-first reading experience simulation.</p>
+        <div class="project-links">
+          <button onclick="toggleDetails(this)">More Info</button>
+          <a href="#">GitHub</a>
+          <a href="ebookreader.html" target="_blank" rel="noopener noreferrer">Live Demo</a>
+        </div>
+        <p class="hidden">This project simulates a real-world ebook reader application, including a selectable bookcase, dynamic chapter navigation, and a responsive reader interface. It features mobile and tablet preview modes, a hamburger menu for navigation, and adaptive layouts to reflect modern reading apps. The project demonstrates front-end development, UI/UX design thinking, and scalable product planning for future mobile app deployment.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="contact" class="section fade-in">
+    <div class="section-intro">
+      <h2>Contact</h2>
+      <p>I am open to junior developer opportunities, freelance work, and collaborative projects. Feel free to reach out.</p>
+    </div>
+
+    <div class="contact-box">
+      <p><strong>Email:</strong> your@email.com</p>
+      <p><strong>GitHub:</strong> Add your GitHub profile link here</p>
+      <p><strong>Location:</strong> Pretoria, South Africa</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 Ashaylan Govender. Built with HTML, CSS, and JavaScript.</p>
+  </footer>
+
+  <script>
+    function toggleDetails(button) {
+      const details = button.parentElement.nextElementSibling;
+      details.classList.toggle('hidden');
+    }
+
+    const fadeElements = document.querySelectorAll('.fade-in');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('show');
+        }
+      });
+    }, {
+      threshold: 0.15
+    });
+
+    fadeElements.forEach((element) => {
+      observer.observe(element);
+    });
+
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    const letters = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*';
+    const fontSize = 14;
+    let columns = 0;
+    let drops = [];
+
+    function setupMatrix() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      columns = Math.ceil(canvas.width / fontSize);
+      drops = Array.from({ length: columns }, () => Math.floor((Math.random() * canvas.height) / fontSize));
+    }
+
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.shadowColor = '#00f7ff';
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = '#00f7ff';
+      ctx.font = fontSize + 'px monospace';
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+
+        drops[i]++;
+      }
+    }
+
+    setupMatrix();
+    drawMatrix();
+    setInterval(drawMatrix, 33);
+
+    window.addEventListener('resize', () => {
+      setupMatrix();
+    });
+  </script>
+</body>
+</html>

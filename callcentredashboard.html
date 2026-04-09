@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Call Centre Dashboard</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .banner {
+      width: 100%;
+      background: #1e293b;
+      color: #facc15;
+      text-align: center;
+      padding: 10px 12px;
+      font-size: 0.92rem;
+      line-height: 1.4;
+    }
+
+    .page {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 28px 20px 40px;
+    }
+
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .hero-text h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.1;
+    }
+
+    .hero-text p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.6;
+      max-width: 760px;
+    }
+
+    .demo-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      font-size: 0.42em;
+      font-weight: 700;
+      line-height: 1;
+      vertical-align: super;
+      white-space: nowrap;
+    }
+
+    .date-box {
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 14px 18px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      min-width: 220px;
+    }
+
+    .date-box small {
+      display: block;
+      color: #64748b;
+      margin-bottom: 4px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .date-box span {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #0f172a;
+    }
+
+    .stats-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      flex: 1 1 220px;
+      max-width: 320px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid #cbd5e1;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    }
+
+    .stat-card h2 {
+      margin: 0 0 10px;
+      font-size: 0.95rem;
+      color: #475569;
+    }
+
+    .stat-card .value {
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-card p {
+      margin: 0;
+      color: #64748b;
+      line-height: 1.5;
+      font-size: 0.9rem;
+    }
+
+    .team-summary-grid,
+    .chart-grid,
+    .trend-grid,
+    .leaderboard-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+
+    .summary-card,
+    .chart-card,
+    .trend-card,
+    .leaderboard-card {
+      flex: 1 1 280px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid #cbd5e1;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    }
+
+    .summary-card h3,
+    .chart-card h3,
+    .trend-card h3,
+    .leaderboard-card h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      color: #0f172a;
+    }
+
+    .summary-card p,
+    .chart-card p,
+    .trend-card p,
+    .leaderboard-card p {
+      margin: 0 0 16px;
+      color: #64748b;
+      line-height: 1.5;
+      font-size: 0.9rem;
+    }
+
+    .team-breakdown {
+      display: grid;
+      gap: 10px;
+    }
+
+    .team-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #f8fafc;
+      font-size: 0.9rem;
+    }
+
+    .team-row strong {
+      color: #0f172a;
+    }
+
+    .mini-label {
+      color: #64748b;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .bar-chart {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 90px 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .bar-label {
+      font-weight: 700;
+      color: #334155;
+      font-size: 0.9rem;
+    }
+
+    .bar-track {
+      width: 100%;
+      height: 14px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #2563eb, #06b6d4);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .bar-value {
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 0.88rem;
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .csv-note {
+      margin-top: 12px;
+      font-size: 0.84rem;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .trend-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .trend-row {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr) auto auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #f8fafc;
+      font-size: 0.9rem;
+    }
+
+    .trend-row strong {
+      color: #0f172a;
+    }
+
+    .leaderboard-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .leaderboard-row {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) auto auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #f8fafc;
+      font-size: 0.9rem;
+    }
+
+    .leaderboard-rank {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .leaderboard-name {
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .leaderboard-team {
+      color: #64748b;
+      font-size: 0.82rem;
+      margin-top: 2px;
+    }
+
+    .leaderboard-sales {
+      font-weight: 700;
+      color: #0f172a;
+      white-space: nowrap;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 380px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.08);
+    }
+
+    .panel h2 {
+      margin: 0 0 8px;
+      font-size: 1.2rem;
+      color: #0f172a;
+    }
+
+    .panel-copy {
+      margin: 0 0 18px;
+      color: #64748b;
+      line-height: 1.55;
+      font-size: 0.94rem;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .form-grid label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .form-grid input,
+    .form-grid select {
+      width: 100%;
+      padding: 12px;
+      min-height: 44px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: white;
+      color: #0f172a;
+      font: inherit;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 16px;
+      min-height: 44px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .primary-btn {
+      background: #0f172a;
+      color: white;
+    }
+
+    .secondary-btn {
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    .table-tools {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tool-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .table-tools input,
+    .table-tools select {
+      padding: 10px 12px;
+      min-height: 42px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: white;
+      font: inherit;
+      color: #0f172a;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 14px;
+      border: 1px solid #e2e8f0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+      background: white;
+    }
+
+    thead {
+      background: #f8fafc;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 14px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 0.94rem;
+    }
+
+    th {
+      color: #475569;
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .attendance-badge,
+    .team-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .present {
+      background: rgba(34, 197, 94, 0.18);
+      color: #15803d;
+    }
+
+    .absent {
+      background: rgba(239, 68, 68, 0.18);
+      color: #b91c1c;
+    }
+
+    .team-badge {
+      background: rgba(59, 130, 246, 0.14);
+      color: #1d4ed8;
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .small-btn {
+      padding: 8px 12px;
+      min-height: 36px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+
+    .edit-btn {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .delete-btn {
+      background: rgba(239, 68, 68, 0.15);
+      color: #b91c1c;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #64748b;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .panel,
+      .summary-card,
+      .chart-card,
+      .trend-card,
+      .leaderboard-card {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .page {
+        padding: 20px 14px 28px;
+      }
+
+      .hero {
+        justify-content: center;
+        text-align: center;
+      }
+
+      .date-box {
+        width: 100%;
+        max-width: 340px;
+      }
+
+      .stats-grid,
+      .team-summary-grid,
+      .chart-grid,
+      .trend-grid {
+        gap: 14px;
+      }
+
+      .stat-card,
+      .summary-card,
+      .chart-card,
+      .trend-card,
+      .leaderboard-card {
+        flex: 1 1 100%;
+        max-width: 420px;
+      }
+
+      .panel {
+        padding: 16px;
+      }
+
+      .table-tools {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .table-tools input,
+      .table-tools select {
+        width: 100%;
+      }
+
+      .team-row,
+      .bar-row,
+      .trend-row,
+      .leaderboard-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .bar-value {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .banner {
+        font-size: 0.84rem;
+      }
+
+      .page {
+        padding: 16px 10px 24px;
+      }
+
+      .hero-text h1 {
+        line-height: 1.2;
+      }
+
+      .demo-badge {
+        display: inline-block;
+        margin-left: 6px;
+        font-size: 0.4em;
+      }
+
+      .button-row button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    This is a showcase version. Data is stored locally in your browser for demo purposes and may be reset at any time. A fuller version with role-based features and reporting can be developed further.
+  </div>
+
+  <main class="page">
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Call Centre Dashboard<span class="demo-badge">DEMO MODE</span></h1>
+        <p>A business-focused dashboard concept for monitoring agent attendance, team allocation, and daily sales in a clear internal management interface.</p>
+      </div>
+
+      <div class="date-box">
+        <small>Today</small>
+        <span id="currentDate"></span>
+      </div>
+    </section>
+
+    <section class="stats-grid">
+      <div class="stat-card">
+        <h2>Total Agents</h2>
+        <div class="value" id="totalAgents">0</div>
+        <p>Total number of agents currently stored in the system.</p>
+      </div>
+
+      <div class="stat-card">
+        <h2>Present Today</h2>
+        <div class="value" id="presentAgents">0</div>
+        <p>Agents currently marked as present for today’s shift.</p>
+      </div>
+
+      <div class="stat-card">
+        <h2>Absent Today</h2>
+        <div class="value" id="absentAgents">0</div>
+        <p>Agents currently marked as absent for today’s shift.</p>
+      </div>
+
+      <div class="stat-card">
+        <h2>Total Sales</h2>
+        <div class="value" id="totalSales">0</div>
+        <p>Total sales captured across all visible agents today.</p>
+      </div>
+    </section>
+
+    <section class="team-summary-grid">
+      <div class="summary-card">
+        <h3>Team Performance Breakdown</h3>
+        <p>A quick comparison of headcount, attendance, and sales across each team.</p>
+        <div class="team-breakdown" id="teamBreakdown"></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Attendance by Team</h3>
+        <p>Visual overview of how many agents are marked present in each team.</p>
+        <div class="bar-chart" id="attendanceChart"></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Sales by Team</h3>
+        <p>Daily sales totals grouped by team for a quick management snapshot.</p>
+        <div class="bar-chart" id="salesChart"></div>
+      </div>
+    </section>
+
+    <section class="trend-grid">
+      <div class="trend-card">
+        <h3>Weekly Trend Snapshot</h3>
+        <p>A simulated week of usage showing attendance and sales movement across the dashboard.</p>
+        <div class="trend-list" id="weeklyTrendList"></div>
+      </div>
+
+      <div class="trend-card">
+        <h3>Export Dashboard Data</h3>
+        <p>Download the currently filtered agent view as a CSV file for reporting or offline review.</p>
+        <div class="button-row">
+          <button type="button" class="primary-btn" onclick="exportCSV()">Export CSV</button>
+        </div>
+        <p class="csv-note">The export respects your current search and team filter selections.</p>
+      </div>
+    </section>
+
+    <section class="leaderboard-grid">
+      <div class="leaderboard-card">
+        <h3>Top Agents Leaderboard</h3>
+        <p>A live ranking of the strongest visible performers based on current sales figures.</p>
+        <div class="leaderboard-list" id="leaderboardList"></div>
+      </div>
+    </section>
+
+    <section class="dashboard-grid">
+      <div class="panel">
+        <h2>Add or Update Agent</h2>
+        <p class="panel-copy">Use this form to add a new agent to the dashboard or update an existing one while building your call centre team view.</p>
+
+        <form class="form-grid" id="agentForm">
+          <div>
+            <label for="agentName">Agent Name</label>
+            <input type="text" id="agentName" placeholder="Enter agent name" required>
+          </div>
+
+          <div>
+            <label for="agentTeam">Team</label>
+            <select id="agentTeam" required>
+              <option value="">Select team</option>
+              <option value="Sales">Sales</option>
+              <option value="Retention">Retention</option>
+              <option value="QA">QA</option>
+              <option value="Support">Support</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="agentAttendance">Attendance</label>
+            <select id="agentAttendance" required>
+              <option value="Present">Present</option>
+              <option value="Absent">Absent</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="agentSales">Sales Today</label>
+            <input type="number" id="agentSales" min="0" value="0" required>
+          </div>
+
+          <input type="hidden" id="editIndex">
+
+          <div class="button-row">
+            <button type="submit" class="primary-btn" id="submitBtn">Save Agent</button>
+            <button type="button" class="secondary-btn" onclick="resetForm()">Clear Form</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h2>Agent Overview</h2>
+        <p class="panel-copy">Review your team at a glance, search by name, and filter by team while monitoring attendance and sales activity.</p>
+
+        <div class="table-tools">
+          <input type="text" id="searchInput" placeholder="Search by agent name...">
+          <div class="tool-actions">
+            <select id="teamFilter">
+              <option value="All">All Teams</option>
+              <option value="Sales">Sales</option>
+              <option value="Retention">Retention</option>
+              <option value="QA">QA</option>
+              <option value="Support">Support</option>
+            </select>
+            <button type="button" class="secondary-btn" onclick="exportCSV()">Export CSV</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th>Team</th>
+                <th>Attendance</th>
+                <th>Sales Today</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="agentTableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="empty-state" id="emptyState">
+          No agents added yet. Use the form to add your first team member.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const agentForm = document.getElementById('agentForm');
+    const agentName = document.getElementById('agentName');
+    const agentTeam = document.getElementById('agentTeam');
+    const agentAttendance = document.getElementById('agentAttendance');
+    const agentSales = document.getElementById('agentSales');
+    const editIndex = document.getElementById('editIndex');
+    const submitBtn = document.getElementById('submitBtn');
+    const searchInput = document.getElementById('searchInput');
+    const teamFilter = document.getElementById('teamFilter');
+    const agentTableBody = document.getElementById('agentTableBody');
+    const emptyState = document.getElementById('emptyState');
+    const teamBreakdown = document.getElementById('teamBreakdown');
+    const attendanceChart = document.getElementById('attendanceChart');
+    const salesChart = document.getElementById('salesChart');
+    const weeklyTrendList = document.getElementById('weeklyTrendList');
+    const leaderboardList = document.getElementById('leaderboardList');
+
+    const STORAGE_KEY = 'callCentreDashboardAgents';
+    const demoAgents = [
+      { id: 1, name: 'Liam Naidoo', team: 'Sales', attendance: 'Present', sales: 8 },
+      { id: 2, name: 'Aisha Dlamini', team: 'Sales', attendance: 'Present', sales: 6 },
+      { id: 3, name: 'Ryan Govender', team: 'Sales', attendance: 'Absent', sales: 0 },
+      { id: 4, name: 'Megan Smith', team: 'Sales', attendance: 'Present', sales: 5 },
+      { id: 5, name: 'Jason Mthembu', team: 'Sales', attendance: 'Present', sales: 9 },
+      { id: 6, name: 'Priya Naicker', team: 'Sales', attendance: 'Present', sales: 4 },
+      { id: 7, name: 'Kyle Petersen', team: 'Sales', attendance: 'Present', sales: 6 },
+      { id: 8, name: 'Nicole Adams', team: 'Sales', attendance: 'Absent', sales: 0 },
+      { id: 9, name: 'Brandon Jacobs', team: 'Sales', attendance: 'Present', sales: 7 },
+      { id: 10, name: 'Leah Moodley', team: 'Sales', attendance: 'Present', sales: 5 },
+      { id: 11, name: 'Tyron Pillay', team: 'Sales', attendance: 'Present', sales: 4 },
+      { id: 12, name: 'Zanele Khumalo', team: 'Sales', attendance: 'Present', sales: 8 },
+      { id: 13, name: 'Nadia Singh', team: 'QA', attendance: 'Present', sales: 0 },
+      { id: 14, name: 'Ethan Daniels', team: 'QA', attendance: 'Present', sales: 0 },
+      { id: 15, name: 'Carla Steyn', team: 'Support', attendance: 'Present', sales: 1 },
+      { id: 16, name: 'Jared Botha', team: 'Retention', attendance: 'Present', sales: 3 },
+      { id: 17, name: 'Faith Mokoena', team: 'Retention', attendance: 'Absent', sales: 0 },
+      { id: 18, name: 'Ruan Visser', team: 'Retention', attendance: 'Present', sales: 4 },
+      { id: 19, name: 'Bianca Ndlovu', team: 'Retention', attendance: 'Present', sales: 3 },
+      { id: 20, name: 'Devon Chetty', team: 'Retention', attendance: 'Absent', sales: 0 },
+      { id: 21, name: 'Mia Roberts', team: 'Retention', attendance: 'Present', sales: 5 },
+      { id: 22, name: 'Caleb Sibiya', team: 'Retention', attendance: 'Present', sales: 1 },
+      { id: 23, name: 'Taryn Kruger', team: 'Retention', attendance: 'Present', sales: 2 },
+      { id: 24, name: 'Olivia Barnard', team: 'Retention', attendance: 'Present', sales: 4 },
+      { id: 25, name: 'Aiden Tshabalala', team: 'Retention', attendance: 'Present', sales: 3 }
+    ];
+
+    let agents = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    if (!agents.length) {
+      agents = demoAgents;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(agents));
+    }
+
+    function loadDemoDataset() {
+      agents = demoAgents.map(agent => ({ ...agent }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(agents));
+    }
+
+    function setCurrentDate() {
+      const today = new Date();
+      document.getElementById('currentDate').textContent = today.toLocaleDateString(undefined, {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+
+    function saveAgents() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(agents));
+    }
+
+    function resetForm() {
+      agentForm.reset();
+      agentAttendance.value = 'Present';
+      agentSales.value = 0;
+      editIndex.value = '';
+      submitBtn.textContent = 'Save Agent';
+      agentName.focus();
+    }
+
+    function updateStats(filteredAgents = agents) {
+      const totalAgents = filteredAgents.length;
+      const presentAgents = filteredAgents.filter(agent => agent.attendance === 'Present').length;
+      const absentAgents = filteredAgents.filter(agent => agent.attendance === 'Absent').length;
+      const totalSales = filteredAgents.reduce((sum, agent) => sum + Number(agent.sales || 0), 0);
+
+      document.getElementById('totalAgents').textContent = totalAgents;
+      document.getElementById('presentAgents').textContent = presentAgents;
+      document.getElementById('absentAgents').textContent = absentAgents;
+      document.getElementById('totalSales').textContent = totalSales;
+    }
+
+    function getTeamMetrics(sourceAgents) {
+      const teamNames = ['Sales', 'Retention', 'QA', 'Support'];
+      return teamNames.map(team => {
+        const teamAgents = sourceAgents.filter(agent => agent.team === team);
+        const present = teamAgents.filter(agent => agent.attendance === 'Present').length;
+        const absent = teamAgents.filter(agent => agent.attendance === 'Absent').length;
+        const sales = teamAgents.reduce((sum, agent) => sum + Number(agent.sales || 0), 0);
+
+        return {
+          team,
+          count: teamAgents.length,
+          present,
+          absent,
+          sales
+        };
+      });
+    }
+
+    function renderTeamBreakdown(filteredAgents) {
+      const metrics = getTeamMetrics(filteredAgents);
+      const populated = metrics.filter(item => item.count > 0);
+
+      if (populated.length === 0) {
+        teamBreakdown.innerHTML = '<div class="empty-state">No team data available yet.</div>';
+        return;
+      }
+
+      teamBreakdown.innerHTML = populated.map(item => `
+        <div class="team-row">
+          <strong>${item.team}</strong>
+          <span><span class="mini-label">Agents:</span> ${item.count}</span>
+          <span><span class="mini-label">Present:</span> ${item.present}</span>
+          <span><span class="mini-label">Sales:</span> ${item.sales}</span>
+        </div>
+      `).join('\n');
+    }
+
+    function renderBarChart(targetElement, metrics, valueKey, emptyMessage) {
+      const maxValue = Math.max(...metrics.map(item => item[valueKey]), 0);
+      const populated = metrics.filter(item => item.count > 0 || item[valueKey] > 0);
+
+      if (populated.length === 0) {
+        targetElement.innerHTML = `<div class="empty-state">${emptyMessage}</div>`;
+        return;
+      }
+
+      targetElement.innerHTML = populated.map(item => {
+        const value = item[valueKey];
+        const width = maxValue === 0 ? 0 : (value / maxValue) * 100;
+        return `
+          <div class="bar-row">
+            <div class="bar-label">${item.team}</div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width: ${width}%"></div>
+            </div>
+            <div class="bar-value">${value}</div>
+          </div>
+        `;
+      }).join('\n');
+    }
+
+    function renderAnalytics(filteredAgents) {
+      const metrics = getTeamMetrics(filteredAgents);
+      renderTeamBreakdown(filteredAgents);
+      renderBarChart(attendanceChart, metrics, 'present', 'No attendance data available yet.');
+      renderBarChart(salesChart, metrics, 'sales', 'No sales data available yet.');
+      renderWeeklyTrends(filteredAgents);
+      renderLeaderboard(filteredAgents);
+    }
+
+    function renderLeaderboard(filteredAgents) {
+      const rankedAgents = [...filteredAgents]
+        .sort((a, b) => Number(b.sales || 0) - Number(a.sales || 0))
+        .slice(0, 5);
+
+      if (!rankedAgents.length) {
+        leaderboardList.innerHTML = '<div class="empty-state">No agent performance data available for the current filter.</div>';
+        return;
+      }
+
+      leaderboardList.innerHTML = rankedAgents.map((agent, index) => `
+        <div class="leaderboard-row">
+          <div class="leaderboard-rank">${index + 1}</div>
+          <div>
+            <div class="leaderboard-name">${agent.name}</div>
+            <div class="leaderboard-team">${agent.team}</div>
+          </div>
+          <div class="leaderboard-sales">${agent.sales} sales</div>
+          <div>
+            <span class="attendance-badge ${agent.attendance === 'Present' ? 'present' : 'absent'}">${agent.attendance}</span>
+          </div>
+        </div>
+      `).join('\n');
+    }
+
+    function renderWeeklyTrends(filteredAgents) {
+      const totalAgents = filteredAgents.length;
+      const totalSales = filteredAgents.reduce((sum, agent) => sum + Number(agent.sales || 0), 0);
+      const presentToday = filteredAgents.filter(agent => agent.attendance === 'Present').length;
+      const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+      const salesRatios = [0.74, 0.81, 0.88, 0.94, 1];
+      const attendanceOffsets = [-2, -1, 0, -1, 0];
+
+      if (!totalAgents) {
+        weeklyTrendList.innerHTML = '<div class="empty-state">No weekly trend data available for the current filter.</div>';
+        return;
+      }
+
+      weeklyTrendList.innerHTML = weekDays.map((day, index) => {
+        const attendance = Math.max(0, Math.min(totalAgents, presentToday + attendanceOffsets[index]));
+        const sales = Math.round(totalSales * salesRatios[index]);
+        return `
+          <div class="trend-row">
+            <strong>${day}</strong>
+            <span><span class="mini-label">Attendance:</span> ${attendance}/${totalAgents}</span>
+            <span><span class="mini-label">Sales:</span> ${sales}</span>
+            <span><span class="mini-label">Status:</span> ${attendance >= totalAgents - 1 ? 'Strong' : 'Stable'}</span>
+          </div>
+        `;
+      }).join('\n');
+    }
+
+    function exportCSV() {
+      const filteredAgents = getFilteredAgents();
+      if (!filteredAgents.length) return;
+
+      const headers = ['Agent Name', 'Team', 'Attendance', 'Sales Today'];
+      const rows = filteredAgents.map(agent => [agent.name, agent.team, agent.attendance, agent.sales]);
+      const csvContent = [headers, ...rows]
+        .map(row => row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.download = 'call-centre-dashboard-export.csv';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    function getFilteredAgents() {
+      const searchValue = searchInput.value.trim().toLowerCase();
+      const selectedTeam = teamFilter.value;
+
+      return agents.filter(agent => {
+        const matchesName = agent.name.toLowerCase().includes(searchValue);
+        const matchesTeam = selectedTeam === 'All' || agent.team === selectedTeam;
+        return matchesName && matchesTeam;
+      });
+    }
+
+    function renderAgents() {
+      const filteredAgents = getFilteredAgents();
+      agentTableBody.innerHTML = '';
+
+      if (filteredAgents.length === 0) {
+        emptyState.style.display = 'block';
+      } else {
+        emptyState.style.display = 'none';
+      }
+
+      filteredAgents.forEach(agent => {
+        const row = document.createElement('tr');
+        const originalIndex = agents.findIndex(item => item.id === agent.id);
+
+        row.innerHTML = `
+          <td>${agent.name}</td>
+          <td><span class="team-badge">${agent.team}</span></td>
+          <td>
+            <span class="attendance-badge ${agent.attendance === 'Present' ? 'present' : 'absent'}">
+              ${agent.attendance}
+            </span>
+          </td>
+          <td>${agent.sales}</td>
+          <td>
+            <div class="row-actions">
+              <button class="small-btn edit-btn" onclick="editAgent(${originalIndex})">Edit</button>
+              <button class="small-btn delete-btn" onclick="deleteAgent(${originalIndex})">Delete</button>
+            </div>
+          </td>
+        `;
+
+        agentTableBody.appendChild(row);
+      });
+
+      updateStats(filteredAgents);
+      renderAnalytics(filteredAgents);
+    }
+
+    function editAgent(index) {
+      const agent = agents[index];
+      agentName.value = agent.name;
+      agentTeam.value = agent.team;
+      agentAttendance.value = agent.attendance;
+      agentSales.value = agent.sales;
+      editIndex.value = index;
+      submitBtn.textContent = 'Update Agent';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteAgent(index) {
+      agents.splice(index, 1);
+      saveAgents();
+      renderAgents();
+      resetForm();
+    }
+
+    agentForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const agentData = {
+        id: editIndex.value === '' ? Date.now() : agents[Number(editIndex.value)].id,
+        name: agentName.value.trim(),
+        team: agentTeam.value,
+        attendance: agentAttendance.value,
+        sales: Number(agentSales.value)
+      };
+
+      if (!agentData.name || !agentData.team) return;
+
+      if (editIndex.value === '') {
+        agents.push(agentData);
+      } else {
+        agents[Number(editIndex.value)] = agentData;
+      }
+
+      saveAgents();
+      renderAgents();
+      resetForm();
+    });
+
+    searchInput.addEventListener('input', renderAgents);
+    teamFilter.addEventListener('change', renderAgents);
+
+    setCurrentDate();
+    loadDemoDataset();
+    resetForm();
+    renderAgents();
+  </script>
+</body>
+</html>
